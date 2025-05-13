@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\RegistrationFormType;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,13 +21,22 @@ final class AuthController extends AbstractController
     public function register(
         Request $request,
         UserPasswordHasherInterface $passwordHasher,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        UserRepository $userRepository
     ): Response {
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            //Check if email already exists
+            $existingUser = $userRepository->findOneBy(['email' => $user->getEmail()]);
+
+            if ($existingUser) {
+                $this->addFlash('error', 'An account with this email already exists.');
+                return $this->redirectToRoute('app_register');
+            }
+
             $plainPassword = $form->get('password')->getData();
             $user->setPassword(
                 $passwordHasher->hashPassword(
@@ -61,15 +71,16 @@ final class AuthController extends AbstractController
         $user = $entityManager->getRepository(User::class)->findOneBy(['verificationToken' => $token]);
 
         if (!$user) {
-            throw $this->createNotFoundException('Invalid verification token.');
+            $this->addFlash('danger', 'The verification link is invalid or has expired.');
+            return $this->render('error.html.twig');
         }
 
-        // Mark the user as verified
+        # Mark the user as verified
         $user->setIsVerified(true);
         $user->setVerificationToken(null);
         $entityManager->flush();
 
-        // Optionally flash a success message
+        # Optionally flash a success message
         $this->addFlash('success', 'Your email has been verified. You can now log in.');
 
         return $this->redirectToRoute('app_login');
@@ -81,11 +92,7 @@ final class AuthController extends AbstractController
         // Get the login error if there is one
         $error = $authenticationUtils->getLastAuthenticationError();
 
-        // Last username entered by the user
-        $lastUsername = $authenticationUtils->getLastUsername();
-
         return $this->render('login.html.twig', [
-            'email' => $lastUsername,
             'error' => $error,
         ]);
     }

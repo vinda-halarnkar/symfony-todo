@@ -11,10 +11,20 @@
                 <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
             {% endif %}
 
+            {% for label, messages in app.flashes %}
+                <div class="mb-20">
+                    {% for message in messages %}
+                        <div class="pt-15 br-5 {{ label }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
             <form method="post" action="{{ path('app_login') }}">
                 <div class="mb-3">
                     <label for="username" class="form-label">Email</label>
-                    <input type="text" value="{{ email }}" name="_email" id="email" class="form-control" required autofocus>
+                    <input type="text" value="" name="_email" id="email" class="form-control" required autofocus>
                 </div>
 
                 <div class="mb-3">
