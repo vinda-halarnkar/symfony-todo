@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ListsRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ListsRepository::class)]
@@ -20,8 +22,13 @@ class UserList
     #[ORM\JoinColumn(nullable: false)]
     private $user;
 
-    #[ORM\OneToMany(mappedBy: 'items', targetEntity: Items::class)]
-    private $lists;
+    #[ORM\OneToMany(mappedBy: 'userList', targetEntity: Items::class, cascade: ['persist', 'remove'])]
+    private Collection $items; 
+
+    public function __construct()
+    {
+        $this->items = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -49,6 +56,11 @@ class UserList
     {
         $this->user = $user;
         return $this;
+    }
+
+    public function getItems(): Collection
+    {
+        return $this->items;
     }
 
 }

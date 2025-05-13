@@ -8,3 +8,32 @@
 /var/
 /vendor/
 ###< symfony/framework-bundle ###
+
+
+### Symfony ###
+/var/
+!/var/.gitkeep
+
+.env.*.local
+.env.test
+
+# Ignore Symfony profiler debug toolbar config
+/.web-server-pid
+
+### Logs, caches, and temp files ###
+*.log
+*.cache
+
+### PHPUnit ###
+/phpunit.result.cache
+
+### IDEs and editor junk ###
+.idea/
+.vscode/
+*.swp
+*.swo
+*.bak
+
+### OS-specific ###
+.DS_Store
+Thumbs.db
