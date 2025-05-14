@@ -28,7 +28,7 @@ cd symfony-todo
 ### 2. Build and Start Docker Containers
 
 ```bash
-docker-compose up -d --build
+docker compose up -d --build
 ```
 
 ### 3. Install PHP Dependencies with Composer
