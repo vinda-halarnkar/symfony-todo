@@ -34,7 +34,7 @@ docker-compose up -d --build
 ### 3. Install PHP Dependencies with Composer
 
 ```bash
-docker exec -it php composer install
+docker exec -it symfony_php composer install
 ```
 
 ### 4. Set Up Environment Variables
@@ -44,8 +44,8 @@ cp .env .env.local
 
 ### 5. Database & Migrations
 ```bash
-docker exec -it php bin/console doctrine:database:create
-docker exec -it php bin/console doctrine:migrations:migrate --no-interaction
+docker exec -it symfony_php bin/console make:migration
+docker exec -it symfony_php bin/console doctrine:migrations:migrate --no-interaction
 ```
 
 ### 6. Access the Application
